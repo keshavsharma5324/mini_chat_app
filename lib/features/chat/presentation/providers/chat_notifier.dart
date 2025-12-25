@@ -6,8 +6,11 @@ part 'chat_notifier.g.dart';
 
 @riverpod
 class ChatNotifier extends _$ChatNotifier {
+  late String _userId;
+
   @override
   Future<List<MessageEntity>> build(String userId) async {
+    _userId = userId;
     return _getMessages(userId);
   }
 
@@ -17,20 +20,19 @@ class ChatNotifier extends _$ChatNotifier {
   }
 
   Future<void> sendMessage(String text) async {
-    final userId = arg; // Family argument
     state = const AsyncValue.loading();
 
     state = await AsyncValue.guard(() async {
       final repo = ref.read(chatRepositoryProvider);
-      await repo.sendMessage(userId, text);
+      await repo.sendMessage(_userId, text);
 
       // Simulate reply delay
       Future.delayed(const Duration(seconds: 1), () async {
-        await repo.receiveMessage(userId);
+        await repo.receiveMessage(_userId);
         ref.invalidateSelf(); // Refresh state to show reply
       });
 
-      return _getMessages(userId);
+      return _getMessages(_userId);
     });
   }
 }

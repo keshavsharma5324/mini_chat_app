@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../models/message_model.dart';
-import '../../../users/data/datasources/user_local_datasource.dart'; // Reuse provider access if possible, or new one
 
 part 'chat_local_datasource.g.dart';
 
