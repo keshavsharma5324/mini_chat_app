@@ -1,7 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/word_meaning_entity.dart';
 import '../../domain/repositories/dictionary_repository.dart';
-import '../datasources/dictionary_remote_datasource.dart';
+import '../datasources/remote/dictionary_remote_datasource.dart';
 
 part 'dictionary_repository_impl.g.dart';
 

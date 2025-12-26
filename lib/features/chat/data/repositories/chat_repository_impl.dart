@@ -1,8 +1,8 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/message_entity.dart';
 import '../../domain/repositories/chat_repository.dart';
-import '../datasources/chat_local_datasource.dart';
-import '../datasources/chat_remote_datasource.dart';
+import '../datasources/local/chat_local_datasource.dart';
+import '../datasources/remote/chat_remote_datasource.dart';
 import '../models/message_model.dart';
 
 part 'chat_repository_impl.g.dart';

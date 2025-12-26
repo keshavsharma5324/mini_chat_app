@@ -1,7 +1,8 @@
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../models/message_model.dart';
+import '../../../../../core/services/local_storage_service.dart';
+import '../../../../../core/services/impl/shared_prefs_storage_service.dart';
+import '../../models/message_model.dart';
 
 part 'chat_local_datasource.g.dart';
 
@@ -11,15 +12,15 @@ abstract class ChatLocalDataSource {
 }
 
 class ChatLocalDataSourceImpl implements ChatLocalDataSource {
-  final SharedPreferences sharedPreferences;
+  final LocalStorageService _storageService;
   static const String _kChatsKeyPrefix = 'chat_v2_';
 
-  ChatLocalDataSourceImpl(this.sharedPreferences);
+  ChatLocalDataSourceImpl(this._storageService);
 
   @override
   Future<List<MessageModel>> getMessages(String userId) async {
     final key = '$_kChatsKeyPrefix$userId';
-    final jsonString = sharedPreferences.getString(key);
+    final jsonString = await _storageService.getString(key);
     if (jsonString == null) return [];
 
     final List<dynamic> jsonList = jsonDecode(jsonString);
@@ -33,14 +34,11 @@ class ChatLocalDataSourceImpl implements ChatLocalDataSource {
 
     final key = '$_kChatsKeyPrefix$userId';
     final jsonString = jsonEncode(messages.map((e) => e.toJson()).toList());
-    await sharedPreferences.setString(key, jsonString);
+    await _storageService.saveString(key, jsonString);
   }
 }
 
 @riverpod
 ChatLocalDataSource chatLocalDataSource(ChatLocalDataSourceRef ref) {
-  // We need the same SharedPreferences instance.
-  // Ideally we have a core provider for SharedPrefs.
-  // For now, I will throw standard error to be overridden in main
-  throw UnimplementedError('SharedPreferences not initialized');
+  return ChatLocalDataSourceImpl(ref.watch(localStorageServiceProvider));
 }

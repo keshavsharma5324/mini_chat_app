@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:mini_chat_app/features/chat/data/datasources/chat_local_datasource.dart';
-import 'package:mini_chat_app/features/chat/data/datasources/chat_remote_datasource.dart';
+import 'package:mini_chat_app/features/chat/data/datasources/local/chat_local_datasource.dart';
+import 'package:mini_chat_app/features/chat/data/datasources/remote/chat_remote_datasource.dart';
 import 'package:mini_chat_app/features/chat/data/repositories/chat_repository_impl.dart';
 import 'package:mini_chat_app/features/chat/data/models/message_model.dart';
 

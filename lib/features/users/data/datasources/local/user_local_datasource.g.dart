@@ -1,30 +1,29 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'dictionary_remote_datasource.dart';
+part of 'user_local_datasource.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$dictionaryRemoteDataSourceHash() =>
-    r'f05cabb394032857796cf4f6b6f1c1b995252cdf';
+String _$userLocalDataSourceHash() =>
+    r'7a08bb53d50b153a16a37e5d6d07b0e20d79231e';
 
-/// See also [dictionaryRemoteDataSource].
-@ProviderFor(dictionaryRemoteDataSource)
-final dictionaryRemoteDataSourceProvider =
-    AutoDisposeProvider<DictionaryRemoteDataSource>.internal(
-      dictionaryRemoteDataSource,
-      name: r'dictionaryRemoteDataSourceProvider',
+/// See also [userLocalDataSource].
+@ProviderFor(userLocalDataSource)
+final userLocalDataSourceProvider =
+    AutoDisposeProvider<UserLocalDataSource>.internal(
+      userLocalDataSource,
+      name: r'userLocalDataSourceProvider',
       debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
           ? null
-          : _$dictionaryRemoteDataSourceHash,
+          : _$userLocalDataSourceHash,
       dependencies: null,
       allTransitiveDependencies: null,
     );
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef DictionaryRemoteDataSourceRef =
-    AutoDisposeProviderRef<DictionaryRemoteDataSource>;
+typedef UserLocalDataSourceRef = AutoDisposeProviderRef<UserLocalDataSource>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

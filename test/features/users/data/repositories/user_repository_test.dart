@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:mini_chat_app/features/users/data/datasources/user_local_datasource.dart';
+import 'package:mini_chat_app/features/users/data/datasources/local/user_local_datasource.dart';
 import 'package:mini_chat_app/features/users/data/repositories/user_repository_impl.dart';
 import 'package:mini_chat_app/features/users/data/models/user_model.dart';
 

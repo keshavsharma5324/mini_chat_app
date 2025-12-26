@@ -7,7 +7,7 @@ part of 'chat_remote_datasource.dart';
 // **************************************************************************
 
 String _$chatRemoteDataSourceHash() =>
-    r'7766cda287a48e58992720dae235a0f275b236db';
+    r'15b1f8c45330e6da46a036dcf20f0e1f3ab0603e';
 
 /// See also [chatRemoteDataSource].
 @ProviderFor(chatRemoteDataSource)

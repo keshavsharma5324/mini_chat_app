@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'core/theme/app_theme.dart';
+import 'core/services/impl/shared_prefs_storage_service.dart';
 import 'features/home/presentation/screens/main_screen.dart';
-import 'features/users/data/datasources/user_local_datasource.dart';
-import 'features/chat/data/datasources/chat_local_datasource.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,11 +12,8 @@ void main() async {
   runApp(
     ProviderScope(
       overrides: [
-        userLocalDataSourceProvider.overrideWith(
-          (ref) => UserLocalDataSourceImpl(sharedPrefs),
-        ),
-        chatLocalDataSourceProvider.overrideWith(
-          (ref) => ChatLocalDataSourceImpl(sharedPrefs),
+        localStorageServiceProvider.overrideWithValue(
+          SharedPrefsStorageService(sharedPrefs),
         ),
       ],
       child: const MyApp(),

@@ -1,7 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/user_repository.dart';
-import '../datasources/user_local_datasource.dart';
+import '../datasources/local/user_local_datasource.dart';
 
 part 'user_repository_impl.g.dart';
 
