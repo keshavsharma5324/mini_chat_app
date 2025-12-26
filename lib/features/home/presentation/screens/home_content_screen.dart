@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../users/presentation/screens/users_list_screen.dart';
+import '../../../chat/presentation/screens/chat_history_screen.dart';
 
 class HomeContentScreen extends StatefulWidget {
   const HomeContentScreen({super.key});
@@ -73,12 +74,7 @@ class _HomeContentScreenState extends State<HomeContentScreen>
       },
       body: TabBarView(
         controller: _tabController,
-        children: const [
-          UsersListScreen(),
-          Center(
-            child: Text("Chat History (To Implementation)"),
-          ), // Kept simple to focus on core changes first, can be added
-        ],
+        children: const [UsersListScreen(), ChatHistoryScreen()],
       ),
     );
   }
