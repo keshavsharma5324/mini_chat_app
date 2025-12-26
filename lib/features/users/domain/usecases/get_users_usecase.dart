@@ -2,6 +2,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/usecase/usecase.dart';
 import '../entities/user_entity.dart';
 import '../repositories/user_repository.dart';
+import '../../data/repositories/user_repository_impl.dart';
 
 part 'get_users_usecase.g.dart';
 
@@ -17,5 +18,6 @@ class GetUsersUseCase implements UseCase<List<UserEntity>, NoParams> {
 
 @riverpod
 GetUsersUseCase getUsersUseCase(GetUsersUseCaseRef ref) {
-  throw UnimplementedError('Provider was not overridden');
+  final repository = ref.watch(userRepositoryProvider);
+  return GetUsersUseCase(repository);
 }
