@@ -25,4 +25,8 @@ class UserNotifier extends _$UserNotifier {
       return _getUsers();
     });
   }
+
+  void refresh() {
+    ref.invalidateSelf();
+  }
 }

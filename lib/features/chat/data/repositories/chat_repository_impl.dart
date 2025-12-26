@@ -14,31 +14,43 @@ class ChatRepositoryImpl implements ChatRepository {
   ChatRepositoryImpl(this.localDataSource, this.remoteDataSource);
 
   @override
-  Future<List<MessageEntity>> getMessages(String userId) {
-    return localDataSource.getMessages(userId);
+  Future<List<MessageEntity>> getMessages(String userId) async {
+    try {
+      return await localDataSource.getMessages(userId);
+    } catch (e) {
+      throw Exception("Failed to load your chat messages.");
+    }
   }
 
   @override
   Future<void> sendMessage(String userId, String text) async {
-    final message = MessageModel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      text: text,
-      timestamp: DateTime.now(),
-      isSender: true,
-    );
-    await localDataSource.saveMessage(userId, message);
+    try {
+      final message = MessageModel(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        text: text,
+        timestamp: DateTime.now(),
+        isSender: true,
+      );
+      await localDataSource.saveMessage(userId, message);
+    } catch (e) {
+      throw Exception("Failed to send your message. Please try again.");
+    }
   }
 
   @override
   Future<void> receiveMessage(String userId) async {
-    final text = await remoteDataSource.fetchRandomComment();
-    final message = MessageModel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      text: text,
-      timestamp: DateTime.now(),
-      isSender: false,
-    );
-    await localDataSource.saveMessage(userId, message);
+    try {
+      final quote = await remoteDataSource.fetchRandomComment();
+      final reply = MessageModel(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        text: quote,
+        timestamp: DateTime.now(),
+        isSender: false,
+      );
+      await localDataSource.saveMessage(userId, reply);
+    } catch (e) {
+      // For automated replies, maybe just ignore or log
+    }
   }
 }
 

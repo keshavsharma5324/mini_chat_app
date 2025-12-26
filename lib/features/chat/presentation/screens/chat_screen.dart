@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/widgets/error_view.dart';
 import '../../domain/entities/message_entity.dart';
 import '../../../users/domain/entities/user_entity.dart'; // Import UserEntity
 import '../providers/chat_notifier.dart';
+import '../../../dictionary/presentation/widgets/word_meaning_sheet.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   final UserEntity user;
@@ -20,13 +22,35 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
-  void _sendMessage() {
-    if (_textController.text.trim().isEmpty) return;
-    ref
-        .read(chatNotifierProvider(widget.user.id).notifier)
-        .sendMessage(_textController.text);
+  Future<void> _sendMessage() async {
+    final text = _textController.text.trim();
+    if (text.isEmpty) return;
+
     _textController.clear();
-    _scrollToBottom();
+
+    try {
+      await ref
+          .read(chatNotifierProvider(widget.user.id).notifier)
+          .sendMessage(text);
+      _scrollToBottom();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString().replaceAll('Exception: ', '')),
+            backgroundColor: Colors.redAccent,
+            action: SnackBarAction(
+              label: 'Retry',
+              textColor: Colors.white,
+              onPressed: () {
+                _textController.text = text;
+                _sendMessage();
+              },
+            ),
+          ),
+        );
+      }
+    }
   }
 
   void _scrollToBottom() {
@@ -97,7 +121,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   },
                 );
               },
-              error: (err, stack) => Center(child: Text('Error: $err')),
+              error: (err, stack) => ErrorView(
+                message: err.toString().replaceAll('Exception: ', ''),
+                onRetry: () =>
+                    ref.invalidate(chatNotifierProvider(widget.user.id)),
+              ),
               loading: () => const Center(child: CircularProgressIndicator()),
             ),
           ),
@@ -164,6 +192,15 @@ class _MessageBubble extends StatelessWidget {
 
   const _MessageBubble({required this.message, required this.user});
 
+  void _showWordMeaning(BuildContext context, String word) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => WordMeaningSheet(word: word),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isMe = message.isSender;
@@ -172,6 +209,9 @@ class _MessageBubble extends StatelessWidget {
         ? AppColors.chatBubbleSender
         : AppColors.chatBubbleReceiver;
     final textColor = isMe ? Colors.white : Colors.black87;
+
+    // Split text into words and punctuation
+    final List<String> words = message.text.split(' ');
 
     return Column(
       crossAxisAlignment: alignment,
@@ -209,16 +249,27 @@ class _MessageBubble extends StatelessWidget {
                     bottomRight: isMe ? Radius.zero : const Radius.circular(16),
                   ),
                 ),
-                child: Text(
-                  message.text,
-                  style: GoogleFonts.outfit(color: textColor, fontSize: 15),
+                child: Wrap(
+                  children: words.map((word) {
+                    return GestureDetector(
+                      onLongPress: () => _showWordMeaning(context, word),
+                      onTap: () => _showWordMeaning(context, word),
+                      child: Text(
+                        '$word ',
+                        style: GoogleFonts.outfit(
+                          color: textColor,
+                          fontSize: 15,
+                        ),
+                      ),
+                    );
+                  }).toList(),
                 ),
               ),
             ),
           ],
         ),
         Padding(
-          padding: EdgeInsets.only(bottom: 12),
+          padding: const EdgeInsets.only(bottom: 12),
           child: Text(
             DateFormat.jm().format(message.timestamp),
             style: TextStyle(color: Colors.grey.shade400, fontSize: 11),

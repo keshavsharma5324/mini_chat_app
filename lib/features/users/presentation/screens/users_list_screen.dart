@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/widgets/error_view.dart';
 import '../providers/user_notifier.dart';
 import '../../../chat/presentation/screens/chat_screen.dart';
 
@@ -105,7 +106,10 @@ class _UsersListScreenState extends ConsumerState<UsersListScreen>
             },
           );
         },
-        error: (err, stack) => Center(child: Text('Error: $err')),
+        error: (err, stack) => ErrorView(
+          message: err.toString().replaceAll('Exception: ', ''),
+          onRetry: () => ref.read(userNotifierProvider.notifier).refresh(),
+        ),
         loading: () => const Center(child: CircularProgressIndicator()),
       ),
     );
