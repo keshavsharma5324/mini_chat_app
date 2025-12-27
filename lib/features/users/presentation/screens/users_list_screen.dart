@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../providers/user_notifier.dart';
 import '../../../chat/presentation/screens/chat_screen.dart';
@@ -45,10 +46,11 @@ class _UsersListScreenState extends ConsumerState<UsersListScreen>
     final usersAsync = ref.watch(userNotifierProvider);
 
     return Scaffold(
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: FloatingActionButton(
         onPressed: _addUserQuickly,
-        icon: const Icon(Icons.add),
-        label: const Text('Add User'),
+        backgroundColor: AppColors.primary,
+        shape: const CircleBorder(),
+        child: const Icon(Icons.add, color: Colors.white),
       ),
       body: usersAsync.when(
         data: (users) {
