@@ -4,6 +4,11 @@ import 'message_entity.dart';
 class ChatSessionEntity {
   final UserEntity user;
   final MessageEntity lastMessage;
+  final int unreadCount;
 
-  ChatSessionEntity({required this.user, required this.lastMessage});
+  ChatSessionEntity({
+    required this.user,
+    required this.lastMessage,
+    this.unreadCount = 0,
+  });
 }

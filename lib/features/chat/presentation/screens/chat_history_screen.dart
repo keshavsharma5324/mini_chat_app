@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
-import '../../../../core/constants/app_colors.dart';
+import '../../../../utils/app_utils.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../providers/chat_history_notifier.dart';
 import 'chat_screen.dart';
@@ -42,22 +41,18 @@ class _ChatHistoryScreenState extends ConsumerState<ChatHistoryScreen>
           );
         }
 
-        return ListView.separated(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+        return ListView.builder(
+          key: const PageStorageKey('chat_history_list'),
           itemCount: sessions.length,
-          separatorBuilder: (context, index) =>
-              const Divider(height: 1, indent: 72),
           itemBuilder: (context, index) {
             final session = sessions[index];
-            final lastMsg = session.lastMessage;
-            final user = session.user;
 
             return ListTile(
               leading: CircleAvatar(
-                backgroundColor: Color(user.avatarColor),
+                backgroundColor: Color(session.user.avatarColor),
                 radius: 24,
                 child: Text(
-                  user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
+                  session.user.name.initials,
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -65,31 +60,37 @@ class _ChatHistoryScreenState extends ConsumerState<ChatHistoryScreen>
                 ),
               ),
               title: Text(
-                user.name,
+                session.user.name,
                 style: const TextStyle(fontWeight: FontWeight.w600),
               ),
               subtitle: Text(
-                lastMsg.text,
+                session.lastMessage.text,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: TextStyle(color: Colors.grey.shade600),
               ),
               trailing: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    _formatTime(lastMsg.timestamp),
+                    session.lastMessage.timestamp.toRelativeString(),
                     style: TextStyle(color: Colors.grey.shade400, fontSize: 11),
                   ),
-                  if (!lastMsg.isSender) ...[
+                  if (session.unreadCount > 0) ...[
                     const SizedBox(height: 4),
                     Container(
-                      width: 8,
-                      height: 8,
+                      padding: const EdgeInsets.all(6),
                       decoration: const BoxDecoration(
-                        color: AppColors.primary,
+                        color: Colors.blue,
                         shape: BoxShape.circle,
+                      ),
+                      child: Text(
+                        '${session.unreadCount}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ],
@@ -98,9 +99,10 @@ class _ChatHistoryScreenState extends ConsumerState<ChatHistoryScreen>
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => ChatScreen(user: user)),
+                  MaterialPageRoute(
+                    builder: (_) => ChatScreen(user: session.user),
+                  ),
                 ).then((_) {
-                  // Refresh history when coming back as messages might have been sent
                   ref.read(chatHistoryNotifierProvider.notifier).refresh();
                 });
               },
@@ -114,19 +116,5 @@ class _ChatHistoryScreenState extends ConsumerState<ChatHistoryScreen>
       ),
       loading: () => const Center(child: CircularProgressIndicator()),
     );
-  }
-
-  String _formatTime(DateTime timestamp) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final date = DateTime(timestamp.year, timestamp.month, timestamp.day);
-
-    if (date == today) {
-      return DateFormat.jm().format(timestamp);
-    } else if (today.difference(date).inDays == 1) {
-      return "Yesterday";
-    } else {
-      return DateFormat.MMMd().format(timestamp);
-    }
   }
 }

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mini_chat_app/theme/app_theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'core/theme/app_theme.dart';
 import 'core/services/impl/shared_prefs_storage_service.dart';
 import 'features/home/presentation/screens/main_screen.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

@@ -1,11 +1,10 @@
 import 'dart:convert';
 import 'dart:math';
-import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../../../../core/constants/app_colors.dart';
 import '../../../../../core/services/local_storage_service.dart';
 import '../../../../../core/services/impl/shared_prefs_storage_service.dart';
 import '../../models/user_model.dart';
+import '../../../../../utils/app_utils.dart';
 
 part 'user_local_datasource.g.dart';
 
@@ -25,7 +24,24 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
     final jsonString = await _storageService.getString(_kUsersKey);
     if (jsonString == null) return [];
     final List<dynamic> jsonList = jsonDecode(jsonString);
-    return jsonList.map((e) => UserModel.fromJson(e)).toList();
+    final users = jsonList.map((e) => UserModel.fromJson(e)).toList();
+
+    // For demo purposes: randomly set some users as online/offline and set lastSeen
+    return users.map((u) {
+      final isOnline = Random().nextBool();
+      DateTime? lastSeen;
+      if (!isOnline) {
+        // Randomly pick a time within the last 3 days
+        lastSeen = DateTime.now().subtract(
+          Duration(
+            days: Random().nextInt(3),
+            hours: Random().nextInt(24),
+            minutes: Random().nextInt(60),
+          ),
+        );
+      }
+      return u.copyWithIsOnline(isOnline, lastSeen: lastSeen);
+    }).toList();
   }
 
   @override
@@ -34,23 +50,13 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
     final newUser = UserModel(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       name: name,
-      avatarColor: _getRandomColor().value,
+      avatarColor: UiUtils.getRandomAvatarColor().value,
+      isOnline: Random().nextBool(),
+      lastSeen: null,
     );
     users.add(newUser);
     final jsonString = jsonEncode(users.map((e) => e.toJson()).toList());
     await _storageService.saveString(_kUsersKey, jsonString);
-  }
-
-  Color _getRandomColor() {
-    final List<Color> colors = [
-      AppColors.primary,
-      AppColors.secondary,
-      AppColors.accent,
-      Colors.green,
-      Colors.orange,
-      Colors.teal,
-    ];
-    return colors[Random().nextInt(colors.length)];
   }
 }
 

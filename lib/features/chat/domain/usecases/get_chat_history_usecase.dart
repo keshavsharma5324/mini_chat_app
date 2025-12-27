@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../core/usecase/usecase.dart';
 import '../../../users/domain/repositories/user_repository.dart';
@@ -23,9 +24,17 @@ class GetChatHistoryUseCase
     for (final user in users) {
       final messages = await chatRepository.getMessages(user.id);
       if (messages.isNotEmpty) {
-        // Assume messages are sorted by time already or sort here
         final lastMessage = messages.last;
-        sessions.add(ChatSessionEntity(user: user, lastMessage: lastMessage));
+        // Simulate unread count for demo: Random number between 0 and 5
+        final int unreadCount = Random().nextInt(6);
+
+        sessions.add(
+          ChatSessionEntity(
+            user: user,
+            lastMessage: lastMessage,
+            unreadCount: unreadCount,
+          ),
+        );
       }
     }
 

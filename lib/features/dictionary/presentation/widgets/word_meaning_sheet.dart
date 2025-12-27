@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/widgets/error_view.dart';
+import '../../../../utils/app_utils.dart';
 import '../providers/word_meaning_notifier.dart';
 
 class WordMeaningSheet extends ConsumerWidget {
@@ -11,7 +12,7 @@ class WordMeaningSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Sanitize word (remove punctuation)
-    final sanitizedWord = word.replaceAll(RegExp(r'[^\w\s]'), '');
+    final sanitizedWord = word.sanitized;
     final meaningAsync = ref.watch(wordMeaningNotifierProvider(sanitizedWord));
 
     return Container(

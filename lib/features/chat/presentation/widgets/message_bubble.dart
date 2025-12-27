@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
+import '../../../../utils/app_utils.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../dictionary/presentation/widgets/word_meaning_sheet.dart';
 import '../../../users/domain/entities/user_entity.dart';
@@ -47,7 +47,7 @@ class MessageBubble extends StatelessWidget {
                 radius: 14,
                 backgroundColor: Color(user.avatarColor),
                 child: Text(
-                  user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
+                  user.name.initials,
                   style: const TextStyle(color: Colors.white, fontSize: 10),
                 ),
               ),
@@ -91,7 +91,7 @@ class MessageBubble extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(bottom: 12),
           child: Text(
-            DateFormat.jm().format(message.timestamp),
+            message.timestamp.toTimeString(),
             style: TextStyle(color: Colors.grey.shade400, fontSize: 11),
           ),
         ),

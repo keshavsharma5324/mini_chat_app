@@ -9,6 +9,8 @@ class UserModel extends UserEntity {
     required super.id,
     required super.name,
     required super.avatarColor,
+    super.isOnline = false,
+    super.lastSeen,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
@@ -20,6 +22,18 @@ class UserModel extends UserEntity {
       id: entity.id,
       name: entity.name,
       avatarColor: entity.avatarColor,
+      isOnline: entity.isOnline,
+      lastSeen: entity.lastSeen,
+    );
+  }
+
+  UserModel copyWithIsOnline(bool isOnline, {DateTime? lastSeen}) {
+    return UserModel(
+      id: id,
+      name: name,
+      avatarColor: avatarColor,
+      isOnline: isOnline,
+      lastSeen: lastSeen ?? this.lastSeen,
     );
   }
 }

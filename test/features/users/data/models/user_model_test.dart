@@ -7,6 +7,8 @@ void main() {
       'id': '1',
       'name': 'Test User',
       'avatarColor': 0xFF123456,
+      'isOnline': false,
+      'lastSeen': null,
     };
 
     test('should convert from JSON correctly', () {
@@ -14,6 +16,8 @@ void main() {
       expect(model.id, '1');
       expect(model.name, 'Test User');
       expect(model.avatarColor, 0xFF123456);
+      expect(model.isOnline, false);
+      expect(model.lastSeen, null);
     });
 
     test('should convert to JSON correctly', () {
@@ -21,6 +25,8 @@ void main() {
         id: '1',
         name: 'Test User',
         avatarColor: 0xFF123456,
+        isOnline: false,
+        lastSeen: null,
       );
       final json = model.toJson();
       expect(json, userJson);

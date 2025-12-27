@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/error_view.dart';
-import '../../domain/entities/message_entity.dart';
-import '../../../users/domain/entities/user_entity.dart'; // Import UserEntity
+import '../../../../utils/app_utils.dart';
+import '../../../users/domain/entities/user_entity.dart';
 import '../providers/chat_notifier.dart';
 import '../widgets/message_bubble.dart';
+import '../../../home/presentation/widgets/app_bottom_nav_bar.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   final UserEntity user;
+  final bool readOnly;
 
-  const ChatScreen({super.key, required this.user});
+  const ChatScreen({super.key, required this.user, this.readOnly = false});
 
   @override
   ConsumerState<ChatScreen> createState() => _ChatScreenState();
@@ -35,26 +35,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       _scrollToBottom();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceAll('Exception: ', '')),
-            backgroundColor: Colors.redAccent,
-            action: SnackBarAction(
-              label: 'Retry',
-              textColor: Colors.white,
-              onPressed: () {
-                _textController.text = text;
-                _sendMessage();
-              },
-            ),
-          ),
-        );
+        context.showErrorSnackBar(e.toString().replaceAll('Exception: ', ''));
       }
     }
   }
 
   void _scrollToBottom() {
-    // Small delay to allow list build
     Future.delayed(const Duration(milliseconds: 100), () {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(
@@ -70,28 +56,58 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Widget build(BuildContext context) {
     final chatState = ref.watch(chatNotifierProvider(widget.user.id));
 
+    // Listen for state changes to scroll to bottom on new messages
+    ref.listen(chatNotifierProvider(widget.user.id), (previous, next) {
+      if (next is AsyncData && next.value != null) {
+        final prevLength = previous?.value?.length ?? 0;
+        final nextLength = next.value!.length;
+        if (nextLength > prevLength) {
+          _scrollToBottom();
+        }
+      }
+    });
+
     return Scaffold(
       appBar: AppBar(
         titleSpacing: 0,
         title: Row(
           children: [
-            CircleAvatar(
-              backgroundColor: Color(widget.user.avatarColor),
-              child: Text(
-                widget.user.name.isNotEmpty
-                    ? widget.user.name[0].toUpperCase()
-                    : '?',
-                style: const TextStyle(color: Colors.white),
-              ),
+            Stack(
+              children: [
+                CircleAvatar(
+                  backgroundColor: Color(widget.user.avatarColor),
+                  child: Text(
+                    widget.user.name.initials,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
+                if (widget.user.isOnline)
+                  Positioned(
+                    right: 0,
+                    bottom: 0,
+                    child: Container(
+                      width: 10,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        color: Colors.green,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 2),
+                      ),
+                    ),
+                  ),
+              ],
             ),
             const SizedBox(width: 10),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(widget.user.name, style: const TextStyle(fontSize: 16)),
-                const Text(
-                  "Online",
-                  style: TextStyle(fontSize: 12, color: Colors.green),
+                Text(
+                  widget.user.isOnline ? "Online" : "Offline",
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: widget.user.isOnline ? Colors.green : Colors.grey,
+                  ),
                 ),
               ],
             ),
@@ -129,9 +145,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               loading: () => const Center(child: CircularProgressIndicator()),
             ),
           ),
-          _buildMessageInput(),
+          if (!widget.readOnly) _buildMessageInput(),
         ],
       ),
+      bottomNavigationBar: const AppBottomNavigationBar(),
     );
   }
 
